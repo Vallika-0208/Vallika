@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login Redirect</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      height: 100vh;
+      justify-content: center;
+      align-items: center;
+      background: #f2f2f2;
+      margin: 0;
+    }
+    .btn {
+      background-color: white;
+      border: 1px solid #ddd;
+      padding: 12px 20px;
+      font-size: 18px;
+      border-radius: 5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .btn img {
+      height: 20px;
+    }
+    .btn:hover {
+      background-color: #f7f7f7;
+    }
+  </style>
+</head>
+<body>
+
+  <button class="btn" onclick="window.open('https://mail.google.com/', '_blank')">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google logo" />
+    Continue with Google
+  </button>
+
+</body>
+</html>
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Facebook Redirect</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      height: 100vh;
+      justify-content: center;
+      align-items: center;
+      background: #f0f2f5;
+      margin: 0;
+    }
+    .btn-facebook {
+      background-color: #1877f2;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 18px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 3px 6px rgba(24, 119, 242, 0.4);
+      transition: background-color 0.3s ease;
+    }
+    .btn-facebook:hover {
+      background-color: #145dbf;
+    }
+    .btn-facebook img {
+      height: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <button class="btn-facebook" onclick="window.open('https://www.facebook.com/', '_blank')">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Facebook_Logo_(2019).png" alt="Facebook logo" />
+    Continue with Facebook
+  </button>
+
+</body>
+</html>

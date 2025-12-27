@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Registration Form</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+      padding: 30px;
+    }
+    .form-container {
+      background: #fff;
+      padding: 25px 30px;
+      max-width: 500px;
+      margin: auto;
+      border-radius: 10px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+    .form-container h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-family: inherit;
+    }
+    .dob-selects {
+      display: flex;
+      gap: 10px;
+    }
+    .dob-selects select {
+      flex: 1;
+    }
+    .gender-options {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      margin-top: 5px;
+    }
+    .gender-options label {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-weight: normal;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .error {
+      color: red;
+      font-size: 14px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="form-container">
+    <h2>Registration Form</h2>
+    <form id="regForm">
+      <div class="form-group">
+        <label for="fname">First Name</label>
+        <input type="text" id="fname" required />
+      </div>
+      <div class="form-group">
+        <label for="lname">Last Name</label>
+        <input type="text" id="lname" required />
+      </div>
+      <div class="form-group">
+        <label for="email">Email ID</label>
+        <input type="email" id="email" required />
+      </div>
+      <div class="form-group">
+        <label for="address">Address</label>
+        <textarea id="address" rows="10" maxlength="5000" required placeholder="Enter your full address..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Date of Birth</label>
+        <div class="dob-selects">
+          <select id="day" required></select>
+          <select id="month" required></select>
+          <select id="year" required></select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Gender</label>
+        <div class="gender-options">
+          <label><input type="radio" name="gender" value="Male" required> Male</label>
+          <label><input type="radio" name="gender" value="Female"> Female</label>
+          <label><input type="radio" name="gender" value="Other"> Other</label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" required />
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" required />
+      </div>
+      <div class="form-group">
+        <label for="confirmPassword">Confirm Password</label>
+        <input type="password" id="confirmPassword" required />
+      </div>
+      <p class="error" id="errorMsg"></p>
+      <button type="submit">Register</button>
+    </form>
+  </div>
+
+  <script>
+    // Convert input to uppercase
+    function toUppercase(str) {
+      return str.toUpperCase();
+    }
+
+    // Populate DOB dropdowns
+    const day = document.getElementById('day');
+    const month = document.getElementById('month');
+    const year = document.getElementById('year');
+
+    for (let d = 1; d <= 31; d++) {
+      day.innerHTML += `<option value="${d}">${d}</option>`;
+    }
+
+    const months = [
+      'January','February','March','April','May','June',
+      'July','August','September','October','November','December'
+    ];
+    months.forEach((m, i) => {
+      month.innerHTML += `<option value="${i + 1}">${m}</option>`;
+    });
+
+    const currentYear = new Date().getFullYear();
+    for (let y = currentYear; y >= 1900; y--) {
+      year.innerHTML += `<option value="${y}">${y}</option>`;
+    }
+
+    // Real-time uppercase for names
+    document.getElementById('fname').addEventListener('input', (e) => {
+      e.target.value = toUppercase(e.target.value);
+    });
+    document.getElementById('lname').addEventListener('input', (e) => {
+      e.target.value = toUppercase(e.target.value);
+    });
+
+    // Form validation
+    const form = document.getElementById('regForm');
+    const errorMsg = document.getElementById('errorMsg');
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const fnameField = document.getElementById('fname');
+      const lnameField = document.getElementById('lname');
+      const password = document.getElementById('password').value;
+      const confirm = document.getElementById('confirmPassword').value;
+
+      // Final uppercase check before submit
+      fnameField.value = toUppercase(fnameField.value.trim());
+      lnameField.value = toUppercase(lnameField.value.trim());
+
+      if (password.length < 6) {
+        errorMsg.textContent = 'Password must be at least 6 characters.';
+        return;
+      }
+      if (password !== confirm) {
+        errorMsg.textContent = 'Passwords do not match.';
+        return;
+      }
+
+      const gender = form.querySelector('input[name="gender"]:checked');
+      if (!gender) {
+        errorMsg.textContent = 'Please select a gender.';
+        return;
+      }
+
+      errorMsg.textContent = '';
+      alert(`Welcome, ${fnameField.value} ${lnameField.value}!\nUsername: ${document.getElementById("username").value}\nGender: ${gender.value}\nRegistration successful.`);
+      form.reset();
+    });
+  </script>
+
+</body>
+</html>
