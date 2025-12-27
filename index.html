@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Facts Time</title>
+<style>
+/* --- Global Styles --- */
+body { margin:0; background:#e0e0e0; font-family:Georgia, serif; color:#000; }
+header { background: transparent; color:#000; text-align:center; padding:20px; font-size:2.5rem; text-transform:uppercase; letter-spacing:2px; position:relative; }
+.auth-buttons { position:absolute; top:20px; right:20px; display:flex; }
+.auth-buttons button { margin-left:8px; padding:8px 16px; font-size:0.9rem; font-weight:bold; border:none; border-radius:999px; background:#1e7b78f3; color:white; cursor:pointer; }
+/* Profile Container now correctly positioned on the right to replace auth-buttons */
+#profileContainer { 
+    display:none; 
+    position:absolute; 
+    top:15px; /* Adjusted top position */
+    right:20px; 
+    cursor:pointer; 
+    padding: 0; /* Remove padding to size the image container */
+    width: 45px; /* Define size */
+    height: 45px; /* Define size */
+    background: #fff; 
+    border-radius: 50%; /* Make it perfectly round */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border: 2px solid #1e7b78f3; /* Teal border for styling */
+    background-size: cover; /* Important for image display */
+    background-position: center; /* Center the image */
+    background-repeat: no-repeat;
+    /* Default icon style (if no image is set) */
+    line-height: 40px; 
+    text-align: center;
+}
+#profileIcon { font-size: 1.5rem; color: #1e7b78f3; } /* Increased size for placeholder */
+#date { text-align:center; font-size:1rem; margin-bottom:10px; }
+.menu { text-align:center; padding:20px 10px; }
+.menu button { margin:5px 10px; padding:10px 24px; font-size:1rem; font-weight:bold; border:none; background:#fff; color:#000; cursor:pointer; border-radius:999px; }
+.menu button.active { background:#1e7b78f3; color:#fff; } /* ONLY Category buttons use this class */
+#news-container { max-width:900px; margin:30px auto; background:rgba(255,255,255,0.7); padding:40px 30px; border-radius:12px; min-height:200px; display:none; }
+.article { margin-bottom:28px; padding-bottom:18px; border-bottom:1px solid rgba(0,0,0,0.08); }
+.article:last-child { border-bottom:none; }
+.article h3 { font-size:1.35rem; font-weight:700; margin:0 0 10px; }
+.meta { font-size:0.9rem; opacity:0.8; margin:4px 0 10px; }
+.article img { width:100%; max-height:360px; object-fit:cover; border-radius:8px; margin:8px 0 12px; }
+.desc { font-size:1.05rem; line-height:1.6; white-space:pre-wrap; }
+
+/* --- Modern Form Styles for Overlay (Login/Register) --- */
+body {
+    background-color: #f7f7f7; /* Lighter background for better modal contrast */
+}
+#overlay {
+    background: rgba(0, 0, 0, 0.9); /* Darker overlay to match image mood */
+}
+#overlay > div { /* The white container card */
+    background: white;
+    padding: 50px 30px; /* Increased padding */
+    border-radius: 30px; /* Highly rounded corners */
+    width: 380px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    text-align: left; /* Align text left inside the form card */
+    
+    /* --- SCROLLBAR ADDITIONS --- */
+    max-height: 90vh; /* Set a maximum height relative to the viewport */
+    overflow-y: auto; /* Enable vertical scroll if content overflows */
+}
+
+/* Custom Scrollbar Styles (Applied to Overlay and Profile Modal) */
+#overlay > div::-webkit-scrollbar,
+#profileModal > div::-webkit-scrollbar,
+#resetPasswordModal > div::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+#overlay > div::-webkit-scrollbar-track,
+#profileModal > div::-webkit-scrollbar-track,
+#resetPasswordModal > div::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+#overlay > div::-webkit-scrollbar-thumb,
+#profileModal > div::-webkit-scrollbar-thumb,
+#resetPasswordModal > div::-webkit-scrollbar-thumb {
+    background: #1e7b78f3; /* MATCHING NEWSPAPER THEME COLOR */
+    border-radius: 10px;
+}
+#overlay > div::-webkit-scrollbar-thumb:hover,
+#profileModal > div::-webkit-scrollbar-thumb:hover,
+#resetPasswordModal > div::-webkit-scrollbar-thumb:hover {
+    background: #155a58; /* Slightly darker teal on hover */
+}
+
+#overlay h2 {
+    font-size: 1.8rem;
+    font-weight: 900;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+/* Tab buttons styling */
+.tab-btn {
+    flex-grow: 1;
+    padding: 10px 0;
+    border: none;
+    background: #f0f0f0;
+    color: #000;
+    cursor: pointer; 
+    font-weight: bold;
+    border-radius: 10px; 
+    transition: all 0.2s;
+    margin: 0 5px;
+}
+.tab-btn.active {
+    background: #1e7b78f3; /* MATCHING NEWSPAPER THEME COLOR */
+    color: white;
+    box-shadow: none;
+}
+.tab-btn:first-child { margin-left: 0; }
+.tab-btn:last-child { margin-right: 0; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* Input field styling */
+#overlay input, #resetPasswordModal input {
+    width: 100%;
+    padding: 18px 20px; 
+    margin: 0 0 10px 0; 
+    border: 1px solid #e0e0e0;
+    border-radius: 12px; 
+    font-size: 1rem;
+    background: #fcfcfc;
+    box-sizing: border-box; 
+}
+#overlay input::placeholder, #resetPasswordModal input::placeholder {
+    color: #aaa;
+    font-weight: 500;
+}
+
+/* Password Visibility Toggle Styles */
+.password-container {
+    position: relative;
+    margin: 10px 0; 
+}
+.password-container input {
+    padding-right: 50px !important; 
+    margin: 0 !important; 
+}
+.toggle-icon {
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #666; 
+    font-size: 1.1rem;
+    padding: 5px; 
+    user-select: none; 
+}
+
+
+/* Primary Form Button Styling */
+#loginTab button:not(.google-button), #registerTab button:not(.google-button), #resetPasswordModal button {
+    width: 100%;
+    padding: 18px;
+    background: #1e7b78f3; /* MATCHING NEWSPAPER THEME COLOR */
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-top: 15px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+#loginTab button:not(.google-button):hover, #registerTab button:not(.google-button):hover, #resetPasswordModal button:hover {
+    background: #155a58; /* Slightly darker teal on hover */
+}
+
+/* Link/Text styles (e.g., forgot password) */
+#loginTab a {
+    color: #1e7b78f3; 
+    text-decoration: none;
+    font-size: 0.95rem;
+    display: block; 
+    margin: 10px 0 20px 0;
+    text-align: right;
+}
+/* Style for the new Reset Password button in the profile modal */
+.reset-button {
+    width: 100%; 
+    padding: 10px; 
+    background: #f0f0f0; 
+    color: #1e7b78f3; 
+    border: 1px solid #1e7b78f3;
+    margin-top: 10px; 
+    margin-bottom: 5px; 
+    border-radius: 10px;
+}
+
+
+/* OAuth Button Styling */
+.oauth-separator {
+    text-align: center;
+    margin: 20px 0;
+    position: relative;
+    font-size: 0.9rem;
+    color: #666;
+}
+.oauth-separator::before,
+.oauth-separator::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 40%;
+    height: 1px;
+    background: #e0e0e0;
+}
+.oauth-separator::before { left: 0; }
+.oauth-separator::after { right: 0; }
+
+.google-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 15px;
+    background: white;
+    color: #000;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 1.05rem;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+.google-button:hover {
+    background: #f5f5f5;
+    border-color: #aaa;
+}
+.google-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+}
+
+
+/* Profile Modal Styles */
+/* ADDED SCROLLBAR STYLES TO PROFILE MODAL CONTAINER */
+#profileModal > div {
+    max-height: 90vh; 
+    overflow-y: auto; 
+}
+
+#profileModal input {
+    padding: 15px 15px;
+    border-radius: 10px;
+}
+#profileModal button {
+    padding: 15px;
+    border-radius: 10px;
+}
+#profileImage {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 15px;
+    border: 3px solid #1e7b78f3;
+}
+/* Ensure consistency of input spacing in profile modal */
+#profileModal input {
+    margin-bottom: 10px;
+}
+
+
+</style>
+</head>
+<body>
+<header id="mainHeader">
+  The Facts Time
+  <div class="auth-buttons">
+    <button onclick="openLogin()">Login</button>
+    <button onclick="openRegister()">Signup</button>
+  </div>
+  <div id="profileContainer" onclick="openProfileModal()">
+    <span id="profileIcon">👤</span>
+  </div>
+</header>
+
+<div id="date">Loading date...</div>
+
+<div class="menu">
+  <button onclick="showCategory(0)" class="active">Business</button>
+  <button onclick="showCategory(1)">Politics</button>
+  <button onclick="showCategory(2)">Environment</button>
+  <button onclick="showCategory(3)">Crime</button>
+  <button onclick="showCategory(4)">Movies</button>
+  <button onclick="showCategory(5)">Sports</button>
+</div>
+
+<div id="news-container">Loading news...</div>
+
+<!-- Login/Register Overlay -->
+<div id="overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.7); justify-content:center; align-items:center; z-index:9999;" onclick="hideOverlay(event)">
+  <div style="background:white; padding:40px; border-radius:24px; width:380px; max-width:90%; text-align:center; position:relative;" onclick="event.stopPropagation()">
+    <a href="#" onclick="hideOverlay(null, true); return false;" style="position:absolute;top:15px;right:20px;font-size:1.8rem; text-decoration: none; color:#000;">&times;</a>
+    <h2>Access The Facts Time</h2>
+    <div style="display:flex; justify-content:space-between; margin:25px 0;">
+      <button id="loginTabBtn" onclick="switchTab('login')" class="tab-btn active">Login</button>
+      <button id="registerTabBtn" onclick="switchTab('register')" class="tab-btn">Signup</button>
+    </div>
+    <div id="loginTab" class="tab-content active">
+      <input id="loginEmail" type="email" placeholder="Email Address">
+        
+        <!-- LOGIN PASSWORD FIELD WITH TOGGLE -->
+        <div class="password-container">
+            <input id="loginPassword" type="password" placeholder="Password">
+            <!-- Initial icon is an open eye to represent its hidden state -->
+            <span class="toggle-icon" onclick="togglePasswordVisibility('loginPassword', this)">👁️</span>
+        </div>
+        
+        <a href="#" onclick="sendPasswordResetEmail(document.getElementById('loginEmail').value, true); return false;">Forgot password?</a>
+      <button onclick="loginUser()">Login</button>
+        
+        <!-- Google Sign-in Button -->
+        <div class="oauth-separator">OR</div>
+        <button class="google-button" onclick="signInWithGoogle()">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Logo_2013_Google.png" class="google-icon" alt="Google icon">
+            Continue with Google
+        </button>
+        
+        <p style="text-align: center; font-size: 0.9rem; margin-top: 20px;">
+            Not a member? <a href="#" onclick="switchTab('register'); return false;" style="display: inline; margin: 0; font-weight: bold;">Signup now</a>
+        </p>
+    </div>
+    <div id="registerTab" class="tab-content">
+      <input id="registerName" type="text" placeholder="Full Name">
+      <input id="registerEmail" type="email" placeholder="Email Address">
+        
+        <!-- ADDRESS FIELD -->
+        <input id="registerAddress" type="text" placeholder="Address">
+
+        <!-- REGISTER PASSWORD FIELD WITH TOGGLE -->
+        <div class="password-container">
+            <input id="registerPassword" type="password" placeholder="Password">
+            <span class="toggle-icon" onclick="togglePasswordVisibility('registerPassword', this)">👁️</span>
+        </div>
+        
+        <!-- CONFIRM PASSWORD FIELD WITH TOGGLE -->
+        <div class="password-container">
+            <input id="registerConfirmPassword" type="password" placeholder="Confirm password">
+            <span class="toggle-icon" onclick="togglePasswordVisibility('registerConfirmPassword', this)">👁️</span>
+        </div>
+        
+      <button onclick="registerUser()">Signup</button>
+
+        <!-- Google Sign-in Button -->
+        <div class="oauth-separator">OR</div>
+        <button class="google-button" onclick="signInWithGoogle()">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Logo_2013_Google.png" class="google-icon" alt="Google icon">
+            Continue with Google
+        </button>
+        
+    </div>
+        
+</div>
+</div>
+
+<!-- Profile Modal -->
+<div id="profileModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.6); justify-content:center; align-items:center; z-index:10000;">
+  <div style="background:white; padding:30px; border-radius:12px; width:400px; max-width:90%; position:relative; text-align:center;">
+    <a href="#" onclick="hideProfileModal(); return false;" style="position:absolute; top:10px; right:15px;font-size:1.5rem; text-decoration:none; color:#000;">&times;</a>
+    <h2>User Profile </h2>
+    <!-- Profile Picture Section -->
+    <img id="profileImage" src="https://placehold.co/80x80/cccccc/000000?text=👤" alt="Profile Picture">
+    <input type="file" id="profilePictureInput" accept="image/*" onchange="uploadProfilePicture()" style="width:100%; padding:10px 0; margin-bottom: 20px; border:none;">
+
+    <input type="text" id="profileNameInput" placeholder="Full Name" style="width:100%; padding:10px; margin:10px 0;">
+    <input type="email" id="profileEmailDisplay" placeholder="Email" disabled style="width:100%; padding:10px; margin:10px 0; background:#f5f5f5;">
+    <input type="text" id="profileAddressInput" placeholder="Address" style="width:100%; padding:10px; margin:10px 0;">
+    
+    <!-- Reset Password Button for Profile -->
+    <button class="reset-button" onclick="sendPasswordResetEmail(document.getElementById('profileEmailDisplay').value, false)">Reset Password</button>
+
+    <button onclick="updateProfile()" style="width:100%; padding:10px; background:#1e7b78f3; color:white;">Save Profile</button>
+    <button onclick="logout()" style="width:100%; padding:10px; background:#dc3545; color:white; margin-top:5px;">Sign Out</button>
+  </div>
+</div>
+
+<!-- NEW: Reset Password Modal (Shown after clicking email link) -->
+<div id="resetPasswordModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background: white; justify-content:center; align-items:center; z-index:12000;">
+  <div style="width: 100%; text-align: center; padding: 20px 0; font-size: 2.5rem; text-transform: uppercase; letter-spacing: 2px; font-weight: bold; font-family: Georgia, serif;">The Facts Time</div>
+  <div style="background:white; padding:40px; border-radius:24px; width:380px; max-width:90%; margin-top: 50px; text-align:center; position:relative; box-shadow: 0 10px 20px rgba(0,0,0,0.1); margin-left: auto; margin-right: auto;">
+    <h2>Set New Password</h2>
+    <p style="text-align: left; margin-bottom: 20px;">Please enter and confirm your new password.</p>
+
+    <!-- New Password Field -->
+    <div class="password-container" style="margin-bottom: 10px;">
+        <input id="newPassword" type="password" placeholder="New Password">
+        <span class="toggle-icon" onclick="togglePasswordVisibility('newPassword', this)">👁️</span>
+    </div>
+
+    <!-- Confirm Password Field -->
+    <div class="password-container">
+        <input id="confirmNewPassword" type="password" placeholder="Confirm New Password">
+        <span class="toggle-icon" onclick="togglePasswordVisibility('confirmNewPassword', this)">👁️</span>
+    </div>
+
+    <button onclick="resetPassword()">Confirm New Password</button>
+  </div>
+</div>
+<!-- End New Modal -->
+
+
+<!-- Message Modal (Replaces alert()) -->
+<div id="messageModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.6); justify-content:center; align-items:center; z-index:11000;">
+  <div style="background:white; padding:30px; border-radius:12px; width:300px; max-width:90%; text-align:center;">
+    <p id="messageText" style="font-size:1.1rem; margin-bottom:20px;"></p>
+    <button onclick="hideMessage()" style="padding:10px 20px; background:#1e7b78f3; color:white; border:none; border-radius:999px; cursor:pointer; font-weight:bold;">OK</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+// Declaring supabase with 'let' globally so other functions can reference it.
+let supabase;
+// Global variable to store the interval ID
+let loginPromptInterval = null; 
+// Store callback function to run on message dismissal
+let messageCallback = null; 
+
+
+// --- Supabase Configuration (Anon Public Key) ---
+const SUPABASE_URL = "https://slaomsvxltbgvhimhowq.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNsYW9tc3Z4bHRiZ3ZoaW1ob3dxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgyNzM5NjgsImV4cCI6MjA3Mzg0OTk2OH0.-Bj8QE3R5xBVI0PEybvhtUaqqAVfI04I5VBPSWKUg8U";
+
+// --- GNews API Key ---
+const GNEWS_API_KEY = "5e87c4dd587f05db54841840360563bd"; 
+const proxy = "https://api.allorigins.win/raw?url="; 
+
+const categories = ["business","politics","environment","crime","movies","sports"];
+let currentTab = 0;
+let currentUserId = null;
+let autoLockActive = false; // Lock to prevent closing the overlay
+
+
+// --- MODAL CONTROL FUNCTIONS (Moved to Global Scope for HTML onclick access) ---
+const overlay = document.getElementById('overlay');
+
+function openLogin(){ 
+    overlay.style.display='flex'; 
+    switchTab('login'); 
+}
+function openRegister(){ 
+    overlay.style.display='flex'; 
+    switchTab('register'); 
+}
+
+/**
+ * Hides the overlay. The click event check prevents accidental closing 
+ * when the overlay is mandatory (autoLockActive).
+ * @param {Event} event The click event (null if called internally).
+ * @param {boolean} forceClose Used by the internal 'X' button to override autoLock.
+ */
+function hideOverlay(event, forceClose = false){
+    // If autoLock is active, only close if forceClose (from 'X' button) is true
+    if (autoLockActive && !forceClose) {
+        return; 
+    }
+    overlay.style.display='none';
+    autoLockActive = false; 
+}
+
+
+function openProfileModal(){ document.getElementById('profileModal').style.display='flex'; }
+function hideProfileModal(){ document.getElementById('profileModal').style.display='none'; }
+
+/**
+ * Shows the custom message modal.
+ * @param {string} text The message to display.
+ * @param {function} callback Optional function to run when the message is dismissed.
+ */
+function showMessage(text, callback = null) {
+  document.getElementById('messageText').innerText = text;
+  document.getElementById('messageModal').style.display = 'flex';
+  messageCallback = callback; // Store the callback
+}
+
+function hideMessage() {
+  document.getElementById('messageModal').style.display = 'none';
+  if (messageCallback) {
+    messageCallback(); // Execute callback (e.g., location.reload)
+    messageCallback = null; // Clear it
+  }
+}
+
+
+// --- Password Toggle Function ---
+function togglePasswordVisibility(inputId, iconElement) {
+    const input = document.getElementById(inputId);
+    // Use the Slashed Eye Unicode Character (U+1F441 U+200D U+2F00)
+    const SLASHED_EYE = '👁️‍ N'; 
+    const OPEN_EYE = '👁️';
+
+    if (input.type === 'password') {
+        input.type = 'text';
+        iconElement.innerText = SLASHED_EYE; // Show password, use slashed eye
+    } else {
+        input.type = 'password';
+        iconElement.innerText = OPEN_EYE; // Hide password, use open eye
+    }
+}
+
+/**
+ * Loads and displays only the current date, without the time.
+ */
+function loadDate(){ 
+    document.getElementById('date').innerText = new Date().toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+    }); 
+}
+
+/**
+ * Re-enabled GNews API with CORS proxy for sandbox compatibility.
+ */
+async function showCategory(index){
+  currentTab=index;
+  document.querySelectorAll(".menu button").forEach((btn,i)=>btn.classList.toggle("active",i===index));
+  const container = document.getElementById('news-container');
+  container.innerHTML='<p style="text-align:center;">Fetching news...</p>';
+  container.style.display='block';
+  
+  const categoryName = categories[index];
+  
+  // *** MAPPING CATEGORY NAME TO A MORE EFFECTIVE SEARCH TERM FOR GNEWS ***
+  let searchTerm = categoryName;
+  if (categoryName === 'politics') searchTerm = 'Indian politics';
+  else if (categoryName === 'environment') searchTerm = 'Indian environmental issues';
+  else if (categoryName === 'crime') searchTerm = 'Indian crime news';
+  else if (categoryName === 'movies') searchTerm = 'Bollywood cinema';
+  
+  // *** FIX: Use 'q' (query) parameter instead of 'topic' to force specific results ***
+  const gnewsUrl = `https://gnews.io/api/v4/search?q=${searchTerm}&lang=en&country=in&token=${GNEWS_API_KEY}&max=10`;
+  
+  // FIX: Use the proxy to hide the origin for external API access
+  const url = proxy + encodeURIComponent(gnewsUrl);
+  
+  const MAX_RETRIES = 5; 
+  let attempt = 0;
+  let data;
+
+  while (attempt < MAX_RETRIES) {
+      try {
+          // Check for client readiness before fetch (redundant but safe)
+          if (typeof supabase === 'undefined') throw new Error("Supabase client not initialized.");
+
+          const res = await fetch(url);
+          
+          if (res.status === 403 || res.status === 401) {
+              container.innerHTML = `<p>Error: The **GNews API Key** is invalid or has expired. Please check the <code>GNEWS_API_KEY</code> in the script.</p>`;
+              return; // Stop execution
+          }
+
+          if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+          data = await res.json();
+          break; // Success, exit loop
+      } catch (err) {
+          // Log specific timeout/network error
+          console.warn(`Attempt ${attempt + 1} failed with error: ${err.message}. Retrying...`);
+
+          attempt++;
+          if (attempt >= MAX_RETRIES) {
+              container.innerHTML = `<p>Error: Failed to fetch news after ${MAX_RETRIES} attempts. The proxy/GNews API may be down, or your key is incorrect.</p>`;
+              return;
+          }
+          // Exponential backoff delay
+          await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 750)); 
+      }
+  }
+    
+  container.innerHTML='';
+  if(!data.articles || data.articles.length===0){ container.innerHTML="<p>No news found for this category.</p>"; return; }
+  
+  data.articles.forEach(a=>{
+      const published = a.publishedAt ? new Date(a.publishedAt).toLocaleDateString() : 'N/A';
+      const div = document.createElement('div');
+      div.className='article';
+      
+      // Reverted to original GNews content structure
+      div.innerHTML = `<h3>${a.title}</h3> 
+      <div class="meta">${a.source.name||'Unknown Source'} | ${published}</div>
+      <!-- Added onerror to handle broken image links -->
+      ${a.image?`<img src="${a.image}" onerror="this.onerror=null;this.src='https://placehold.co/900x360/cccccc/000000?text=Image+Unavailable';">`:''}
+      <div class="desc">${a.description||'No description available.'}</div>`;
+    container.appendChild(div);
+  });
+}
+
+// --- Overlay & Tabs ---
+function switchTab(tab){
+  document.getElementById('loginTab').classList.toggle('active', tab==='login');
+  document.getElementById('registerTab').classList.toggle('active', tab==='register');
+  document.getElementById('loginTabBtn').classList.toggle('active', tab==='login');
+  document.getElementById('registerTabBtn').classList.toggle('active', tab==='register');
+}
+
+// --- OAuth Sign-In ---
+async function signInWithGoogle() {
+    // Note: You must enable the Google provider in your Supabase Auth settings.
+    const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+            // Important for sandbox environments: redirect to the current URL after sign-in
+            redirectTo: window.location.href, 
+        }
+    });
+
+    if (error) {
+        showMessage(`Google Sign-in failed: ${error.message}`);
+    } 
+    // Supabase handles the redirect; the successful session is picked up on page reload/init.
+}
+
+// --- Password Reset Function ---
+/**
+ * Sends a password reset email to the given email address.
+ * @param {string} email The email address to send the reset link to.
+ * @param {boolean} hideForm Whether to hide the login form after sending the request.
+ */
+async function sendPasswordResetEmail(email, hideForm) {
+    if (!email) {
+        showMessage("Please enter your email address in the field above.");
+        return;
+    }
+
+    try {
+        // Supabase sends the password reset email
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+            // FIX: Use window.location.origin to redirect to the site's root URL, 
+            // ensuring the password change process works correctly.
+            redirectTo: window.location.origin 
+        });
+
+        if (error) {
+            showMessage(`Error: ${error.message}`);
+        } else {
+            showMessage(`A password reset link has been sent to ${email}. Please check your inbox!`);
+            if (hideForm) {
+                hideOverlay(null, true);
+            } else {
+                hideProfileModal();
+            }
+        }
+    } catch (e) {
+        showMessage(`An unexpected error occurred: ${e.message}`);
+    }
+}
+
+
+// --- ACTUAL PASSWORD RESET IMPLEMENTATION ---
+async function resetPassword() {
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+
+    if (!newPassword || !confirmNewPassword) {
+        showMessage("Please enter both the new password and confirmation.");
+        return;
+    }
+
+    if (newPassword !== confirmNewPassword) {
+        showMessage("Error: Passwords do not match.");
+        return;
+    }
+    
+    // Simple password validation
+    if (newPassword.length < 6) {
+        showMessage("Password must be at least 6 characters long.");
+        return;
+    }
+
+    const resetBtn = document.querySelector('#resetPasswordModal button');
+    const originalText = resetBtn.innerText;
+    resetBtn.disabled = true;
+    resetBtn.innerText = 'Updating...';
+
+    try {
+        // The user is already signed into a recovery session via the URL, 
+        // so we can update the password directly using the updateUser method.
+        const { error } = await supabase.auth.updateUser({ 
+            password: newPassword 
+        });
+
+        if (error) {
+            showMessage(`Password reset failed: ${error.message}`);
+        } else {
+            // Success: Show message, then reload when user dismisses the message
+            showMessage('Success! Your password has been updated. You can now log in.', () => {
+                window.location.href = window.location.origin;
+            });
+        }
+    } catch (e) {
+        showMessage(`An unexpected error occurred: ${e.message}`);
+    } finally {
+        resetBtn.disabled = false;
+        resetBtn.innerText = originalText;
+    }
+}
+// --- END ACTUAL PASSWORD RESET IMPLEMENTATION ---
+
+
+// --- Login/Register ---
+async function registerUser(){
+  const registerBtn = document.querySelector('#registerTab button:not(.google-button)');
+  const originalText = registerBtn.innerText;
+  
+  const name=document.getElementById('registerName').value;
+  const email=document.getElementById('registerEmail').value;
+  const address=document.getElementById('registerAddress').value; 
+  const password=document.getElementById('registerPassword').value;
+  const confirmPassword=document.getElementById('registerConfirmPassword').value;
+
+  if (!name || !email || !address || !password || !confirmPassword) {
+    showMessage("Please fill in all fields.");
+    return;
+  }
+  
+  if (password !== confirmPassword) {
+    showMessage("Error: Passwords do not match.");
+    return;
+  }
+
+  // START LOADING STATE
+  registerBtn.disabled = true;
+  registerBtn.innerText = 'Signing Up...';
+
+  try {
+    // 1. Sign up the user (creates entry in auth.users)
+    const { data, error } = await supabase.auth.signUp({ email,password,options:{data:{full_name:name}} });
+    
+    if(error){ showMessage(error.message); return; }
+
+    // 2. Insert profile data into the 'profiles' table (Requires RLS Insert Policy!)
+    if (data.user) {
+        // Renamed from 'address' to 'address_line1' and 'email' to 'email' (for safety)
+        const { error: profileError } = await supabase.from('profiles').insert([{ 
+            id: data.user.id, 
+            full_name: name, 
+            email: email, 
+            address_line1: address,
+            username: email.split('@')[0] // Use email prefix as temporary username
+        }]);
+
+        if (profileError) {
+             console.error("Profile Insert Error:", profileError);
+             showMessage(`Signup successful, but profile data insertion failed (RLS issue?). Error: ${profileError.message}`);
+             // Proceed to UI setup even if profile insert fails, as auth is done.
+        }
+    }
+    
+    showMessage('Registration successful! Check your email for confirmation.');
+    // MODIFIED: Hide overlay AFTER setProfileUI confirms session/stops interval
+    await setProfileUI(data.user); // Await the UI setup
+    hideOverlay(null, true); // Force hide after successful process
+  } catch (e) {
+      showMessage(`An unexpected error occurred: ${e.message}`);
+  } finally {
+      // END LOADING STATE
+      registerBtn.disabled = false;
+      registerBtn.innerText = originalText;
+  }
+}
+
+async function loginUser(){
+  const loginBtn = document.querySelector('#loginTab button:not(.google-button)');
+  const originalText = loginBtn.innerText;
+
+  const email=document.getElementById('loginEmail').value;
+  const password=document.getElementById('loginPassword').value;
+
+  if (!email || !password) {
+    showMessage("Please enter both email and password.");
+    return;
+  }
+
+  // START LOADING STATE
+  loginBtn.disabled = true;
+  loginBtn.innerText = 'Logging In...';
+
+  try {
+    const { data, error } = await supabase.auth.signInWithPassword({ email,password });
+    
+    if(error){ showMessage(error.message); return; }
+    
+    // MODIFIED: Hide overlay AFTER setProfileUI confirms session/stops interval
+    await setProfileUI(data.user); // Await the UI setup
+    hideOverlay(null, true); // Force hide after successful process
+    
+    // ADDED: Show success message after successful login
+    showMessage("Login successful!");
+  } catch (e) {
+      showMessage(`An unexpected error occurred: ${e.message}`);
+  } finally {
+      // END LOADING STATE
+      loginBtn.disabled = false;
+      loginBtn.innerText = originalText;
+  }
+}
+
+// --- Profile ---
+async function setProfileUI(user){
+  document.getElementById('profileContainer').style.display='block';
+  document.querySelector('.auth-buttons').style.display='none';
+  currentUserId = user.id;
+  
+  // FIX: Clear the interval explicitly here on successful authentication
+  if (loginPromptInterval) {
+      clearInterval(loginPromptInterval);
+      loginPromptInterval = null; // Set to null after clearing
+  }
+
+  // Table name is 'profiles' and column names are 'full_name', 'address_line1', 'avatar_url'
+  const { data } = await supabase.from('profiles').select('full_name, address_line1, avatar_url, email').eq('id',user.id).single();
+  
+  if(data){
+    // Display Full Name, Address, and Profile Picture
+    document.getElementById('profileNameInput').value=data.full_name||'';
+    document.getElementById('profileEmailDisplay').value=data.email||user.email||'';
+    document.getElementById('profileAddressInput').value=data.address_line1||''; // CORRECTED COLUMN NAME
+    const profileImageUrl = data.avatar_url;
+    
+    // Header Icon Update Logic
+    const profileContainer = document.getElementById('profileContainer');
+    if (profileImageUrl) {
+        profileContainer.style.backgroundImage = `url('${profileImageUrl}')`;
+        document.getElementById('profileIcon').style.display = 'none';
+    } else {
+        profileContainer.style.backgroundImage = 'none';
+        document.getElementById('profileIcon').style.display = 'inline';
+    }
+
+    // Update the image in the modal as well
+    document.getElementById('profileImage').src = profileImageUrl || 'https://placehold.co/80x80/cccccc/000000?text=👤';
+
+  } else {
+    // If profile data is missing (e.g., first OAuth login or RLS failed previously)
+    // Attempt to create a minimal profile entry.
+    const name = user.user_metadata.full_name || user.email.split('@')[0];
+    const email = user.email || '';
+    
+    await supabase.from('profiles').insert([{ id:user.id, full_name:name, email, username: name }]);
+    
+    // Now display the initial data
+    document.getElementById('profileEmailDisplay').value=email;
+    document.getElementById('profileNameInput').value=name;
+  }
+}
+
+
+async function uploadProfilePicture() {
+    const fileInput = document.getElementById('profilePictureInput');
+    const file = fileInput.files[0];
+
+    if (!file) {
+        showMessage('Please select a file to upload.');
+        return;
+    }
+    
+    if (!currentUserId) {
+        showMessage('User ID not found. Please log in again.');
+        return;
+    }
+
+    // Set the file path to be scoped to the user's ID folder
+    const filePath = `${currentUserId}/${Date.now()}.${file.name.split('.').pop()}`;
+    const bucketName = 'avatars'; // Must match bucket name in Supabase Storage
+    
+    // 1. Upload the file
+    const { data: uploadData, error: uploadError } = await supabase.storage
+        .from(bucketName) 
+        .upload(filePath, file, {
+            cacheControl: '3600',
+            upsert: false
+        });
+
+    if (uploadError) {
+        if (uploadError.message.includes('Bucket not found')) {
+            showMessage(`Image upload failed: The Supabase Storage bucket "${bucketName}" was not found. Please create it manually in your Supabase project's Storage section.`);
+        } else {
+            showMessage(`Image upload failed: ${uploadError.message}`);
+        }
+        return;
+    }
+
+    // 2. Get the public URL for the uploaded file
+    const { data: publicUrlData } = supabase.storage
+        .from(bucketName)
+        .getPublicUrl(uploadData.path);
+
+    if (publicUrlData.publicUrl) {
+        await saveProfilePictureUrl(publicUrlData.publicUrl);
+    }
+}
+
+async function saveProfilePictureUrl(url) {
+    // Correctly update the 'profiles' table with the 'avatar_url' column
+    const { error } = await supabase.from('profiles')
+        .update({ avatar_url: url })
+        .eq('id', currentUserId); // Use 'id' column for lookup
+
+    if (error) {
+        // Log the error for better debugging
+        console.error("Supabase Save Profile URL Error:", error);
+        showMessage(`Failed to save image URL to profile: ${error.message}`);
+        return;
+    }
+
+    // Update the header icon display
+    const profileContainer = document.getElementById('profileContainer');
+    profileContainer.style.backgroundImage = `url('${url}')`;
+    document.getElementById('profileIcon').style.display = 'none';
+
+    // Update the image in the modal immediately
+    document.getElementById('profileImage').src = url;
+    showMessage('Profile picture updated successfully!');
+}
+
+
+async function updateProfile(){
+  const name=document.getElementById('profileNameInput').value;
+  const address=document.getElementById('profileAddressInput').value;
+  const email=document.getElementById('profileEmailDisplay').value;
+
+  if (!name || !address) {
+    showMessage("Full Name and Address cannot be empty.");
+    return;
+  }
+
+  // Correctly update the 'profiles' table with the correct column names
+  const { error } = await supabase.from('profiles')
+    .update({ full_name:name, address_line1: address }) // address_line1 is the correct column
+    .eq('email', email); // Look up by email
+
+  if(error){ showMessage(error.message); return; }
+  
+  showMessage('Profile updated successfully!');
+}
+
+async function logout(){ 
+  await supabase.auth.signOut(); 
+  
+  // FIX: Manually reset UI to unauthenticated state immediately
+  document.getElementById('profileContainer').style.display='none';
+  document.querySelector('.auth-buttons').style.display='flex';
+  
+  // ADDED: Show success message BEFORE reloading, passing reload function as callback
+  showMessage("Logged out successfully!", () => {
+      location.reload(); 
+  });
+  
+  // Removed direct location.reload() here. It now runs via the callback.
+}
+
+// Function to check login status and prompt (called repeatedly by interval)
+async function promptLoginIfNecessary() {
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    // If no active session AND the overlay is not already visible, open and lock it
+    if (!session && overlay.style.display !== 'flex') {
+        openLogin();
+        autoLockActive = true;
+    } else if (session) {
+        // If a session is suddenly found (e.g., in another tab), stop the interval
+        clearInterval(loginPromptInterval);
+        loginPromptInterval = null; 
+    }
+}
+
+// Function to check the URL for recovery parameters (runs only once on load)
+function checkUrlForPasswordRecovery() {
+    const params = new URLSearchParams(window.location.hash.substring(1));
+    const recoveryToken = params.get('access_token');
+
+    // Supabase inserts the access_token into the URL fragment (#) on recovery redirect
+    if (recoveryToken) {
+        // Hide the rest of the application content
+        document.getElementById('mainHeader').style.display = 'none';
+        document.getElementById('date').style.display = 'none';
+        document.querySelector('.menu').style.display = 'none';
+        document.getElementById('news-container').style.display = 'none';
+        
+        // Show the reset password modal
+        document.getElementById('resetPasswordModal').style.display = 'flex';
+        
+        // Stop the recurring login prompt
+        if (loginPromptInterval) {
+            clearInterval(loginPromptInterval);
+            loginPromptInterval = null;
+        }
+    }
+}
+
+
+// --- Initialize App once Supabase is loaded ---
+function initializeApp() {
+    // 1. Check for Password Recovery hash FIRST
+    checkUrlForPasswordRecovery();
+
+    // 2. Load Date (Independent of Supabase)
+    loadDate(); 
+    
+    // 3. Show Initial Category (Independent of Supabase)
+    showCategory(0);
+
+    // 4. Check Auth Status (Dependent on Supabase)
+    supabase.auth.getSession().then(({data:{session}})=>{ 
+        if(session && session.user) {
+            setProfileUI(session.user);
+        }
+    });
+
+    // 5. MODIFIED: Start the interval to prompt for login every 5 seconds
+    // Wait for the initial 5 seconds before the first check
+    loginPromptInterval = setInterval(promptLoginIfNecessary, 5000); 
+}
+
+
+// Initializing the client after the variables are set up
+document.addEventListener('DOMContentLoaded', () => {
+    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    initializeApp();
+    
+    // --- DISABLE RIGHT-CLICK ---
+    document.addEventListener('contextmenu', event => event.preventDefault());
+    // ---------------------------
+});
+</script>
+</body>
+</html>
