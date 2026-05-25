@@ -1,6 +1,6 @@
 # Internship Engineering Portfolio - Rangavallika Sajja
 
-Welcome to my submission repository! This workspace tracks and hosts the core engineering modules and applications completed during my internship at Slush.
+Welcome to my submission repository! This workspace tracks and hosts the core engineering modules and applications completed during my internship at Slash Mark.
 
 ---
 
