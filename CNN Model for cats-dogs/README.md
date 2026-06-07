@@ -1,9 +1,11 @@
-#Dogs vs Cats Image Classification Using CNN#
-##Project Overview##
+Dogs vs Cats Image Classification Using CNN
+
+Project Overview
 
 This project implements a Convolutional Neural Network (CNN) using TensorFlow and Keras to classify images as either Dog or Cat. The model is trained on a Dogs vs Cats dataset with data augmentation techniques to improve performance and reduce overfitting.
 
-##Features##
+Features
+
 Image classification using CNN
 Data augmentation for better generalization
 Batch Normalization and Dropout layers
@@ -11,7 +13,9 @@ Early Stopping and Learning Rate Reduction
 Validation Accuracy and Loss Curves
 Confusion Matrix Evaluation
 Prediction on new images
-##Technologies Used##
+
+Technologies Used
+
 Python
 TensorFlow / Keras
 NumPy
@@ -26,7 +30,7 @@ Source: Kaggle
 
 Download the dataset from Kaggle and extract it into the project directory before training.
 
-##Expected folder structure:##
+Expected folder structure:
 
 extracted_data/
 │
